@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,6 +17,8 @@ namespace DataLogger
         private string fileName = null;
 
         private Boolean running = false;
+
+        private int counter = 0;
 
         public Main()
         {
@@ -76,21 +78,49 @@ namespace DataLogger
                     saveFileDialog1.ShowDialog();
                 }
 
-                ((Button)sender).ImageKey = "stop-icon.png";
-                ((Button)sender).Text = "Parar";
-            }
-            else
-            {
-                ((Button)sender).ImageKey = "start-icon 16.png";
-                ((Button)sender).Text = "Iniciar";
+                if (this.fileName == null || this.fileName.Length <= 0)
+                {
+                    return;
+                }
             }
 
-            this.running = !this.running;
+            toogleMeasure();
         }
 
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             this.fileName = saveFileDialog1.FileName;
+        }
+
+        private void intervalTimer_Tick(object sender, EventArgs e)
+        {
+            collectedData.AppendText("\r\nMedida " + Convert.ToString(this.counter++));
+        }
+
+        private void measureTimer_Tick(object sender, EventArgs e)
+        {
+            toogleMeasure();
+        }
+
+        private void toogleMeasure()
+        {
+            String imageKey, text;
+
+            if (this.running)
+            {
+                imageKey = "start-icon 16.png";
+                text = "Iniciar";
+            }
+            else
+            {
+                imageKey = "stop-icon.png";
+                text = "Parar";
+            }
+
+            startProcess.ImageKey = imageKey;
+            startProcess.Text = text;
+
+            intervalTimer.Enabled = measureTimer.Enabled = this.running = !this.running;
         }
     }
 }

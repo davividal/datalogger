@@ -1,4 +1,4 @@
-﻿namespace DataLogger
+namespace DataLogger
 {
     partial class PortSetup
     {
