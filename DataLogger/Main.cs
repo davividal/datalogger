@@ -5,8 +5,10 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.IO.Ports;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Timers;
 
 using Microsoft.VisualBasic;
 
@@ -27,18 +29,13 @@ namespace DataLogger
 
         private void portMenu_Click(object sender, EventArgs e)
         {
-            PortSetup portSetup = new PortSetup();
-
-            portSetup.ShowDialog();
-
-            string port = portSetup.getPort();
-
-            if (0 < port.Trim().Length)
+            ((ToolStripDropDownButton)sender).DropDownItems.Clear();
+            foreach (string port in SerialPort.GetPortNames())
             {
-                ((ToolStripDropDownButton)sender).Text = port;
-
-                serialPort1.PortName = port;
+                ((ToolStripDropDownButton)sender).DropDownItems.Add(port);
             }
+            ((ToolStripDropDownButton)sender).DropDownItems.Add("foo");
+            ((ToolStripDropDownButton)sender).DropDownItems.Add("foo");
         }
 
         private void timeInterval_Click(object sender, EventArgs e)
@@ -94,7 +91,8 @@ namespace DataLogger
 
         private void intervalTimer_Tick(object sender, EventArgs e)
         {
-            collectedData.AppendText("\r\nMedida " + Convert.ToString(this.counter++));
+            string time = Convert.ToString(DateTime.Now.TimeOfDay);
+            collectedData.AppendText(time + ";Medida " + Convert.ToString(this.counter++) + "\r\n");
         }
 
         private void measureTimer_Tick(object sender, EventArgs e)
