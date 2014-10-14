@@ -93,6 +93,7 @@ namespace DataLogger
         {
             string time = Convert.ToString(DateTime.Now.TimeOfDay);
             collectedData.AppendText(time + ";Medida " + Convert.ToString(this.counter++) + "\r\n");
+            serialPort1.ReadLine();
         }
 
         private void measureTimer_Tick(object sender, EventArgs e)

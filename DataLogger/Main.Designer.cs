@@ -34,6 +34,7 @@ namespace DataLogger
             this.portMenu = new System.Windows.Forms.ToolStripDropDownButton();
             this.timeInterval = new System.Windows.Forms.ToolStripDropDownButton();
             this.measureTime = new System.Windows.Forms.ToolStripDropDownButton();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.intervalTimer = new System.Windows.Forms.Timer(this.components);
             this.measureTimer = new System.Windows.Forms.Timer(this.components);
             this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
@@ -41,17 +42,11 @@ namespace DataLogger
             this.startProcess = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.collectedData = new System.Windows.Forms.TextBox();
-            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.portMenu,
-            this.timeInterval,
-            this.measureTime,
-            this.toolStripProgressBar1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 308);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(609, 22);
@@ -87,6 +82,11 @@ namespace DataLogger
             this.measureTime.Size = new System.Drawing.Size(131, 20);
             this.measureTime.Text = "Intervalo de medição";
             this.measureTime.Click += new System.EventHandler(this.measureTime_Click);
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
             // 
             // intervalTimer
             // 
@@ -135,11 +135,6 @@ namespace DataLogger
             this.collectedData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.collectedData.Size = new System.Drawing.Size(520, 281);
             this.collectedData.TabIndex = 2;
-            // 
-            // toolStripProgressBar1
-            // 
-            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
-            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
             // 
             // Main
             // 
