@@ -140,8 +140,25 @@ namespace DataLogger
         private void intervalTimer_Tick(object sender, EventArgs e)
         {
             string time = Convert.ToString(DateTime.Now.TimeOfDay);
-            collectedData.AppendText(time + ";Medida " + Convert.ToString(this.counter++) + "\r\n");
-            //serialPort1.ReadLine();
+            String measure;
+
+            try
+            {
+                measure = serialPort1.ReadLine();
+
+                collectedData.AppendText(time + ";" + measure + "\r\n");
+            }
+            catch (System.InvalidOperationException exception)
+            {
+                toogleMeasure();
+
+                MessageBox.Show(
+                    "Ocorreu um erro durante a leitura da porta serial. A mensagem de erro foi: " + exception.Message,
+                    "Impossível Medir",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop
+                );
+            }
         }
 
         private void measureTimer_Tick(object sender, EventArgs e)
