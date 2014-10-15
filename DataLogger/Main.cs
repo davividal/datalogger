@@ -20,6 +20,10 @@ namespace DataLogger
 
         private Boolean running = false;
 
+        private Boolean intervalSetup = false;
+
+        private Boolean measureSetup = false;
+
         private int counter = 0;
 
         public Main()
@@ -27,15 +31,39 @@ namespace DataLogger
             InitializeComponent();
         }
 
+        public Boolean setup()
+        {
+            return this.intervalSetup && this.measureSetup;
+        }
+
         private void portMenu_Click(object sender, EventArgs e)
         {
+            ToolStripMenuItem portMenu = new ToolStripMenuItem();
+
             ((ToolStripDropDownButton)sender).DropDownItems.Clear();
-            foreach (string port in SerialPort.GetPortNames())
+            foreach (string portName in SerialPort.GetPortNames())
             {
-                ((ToolStripDropDownButton)sender).DropDownItems.Add(port);
+                portMenu = new ToolStripMenuItem();
+                portMenu.Text = portName;
+                portMenu.Click += setupPortClick;
+
+                ((ToolStripDropDownButton)sender).DropDownItems.Add(portMenu);
             }
-            ((ToolStripDropDownButton)sender).DropDownItems.Add("foo");
-            ((ToolStripDropDownButton)sender).DropDownItems.Add("foo");
+
+            portMenu = new ToolStripMenuItem();
+            portMenu.Text = "COM1";
+            portMenu.Click += setupPortClick;
+            ((ToolStripDropDownButton)sender).DropDownItems.Add(portMenu);
+
+            portMenu = new ToolStripMenuItem();
+            portMenu.Text = "COM2";
+            portMenu.Click += setupPortClick;
+            ((ToolStripDropDownButton)sender).DropDownItems.Add(portMenu);
+        }
+
+        private void setupPortClick(object sender, EventArgs e)
+        {
+            serialPort1.PortName = ((ToolStripMenuItem)sender).Text;
         }
 
         private void timeInterval_Click(object sender, EventArgs e)
@@ -49,6 +77,7 @@ namespace DataLogger
                 ((ToolStripDropDownButton)sender).Text = intervalSetup.getTime();
 
                 intervalTimer.Interval = intervalSetup.getValue();
+                this.intervalSetup = true;
             }
         }
 
@@ -63,11 +92,30 @@ namespace DataLogger
                 ((ToolStripDropDownButton)sender).Text = measureSetup.getTime();
 
                 measureTimer.Interval = measureSetup.getValue();
+                this.measureSetup = true;
             }
         }
 
         private void startProcess_Click(object sender, EventArgs e)
         {
+            if (!this.setup())
+            {
+                measureTime_Click(measureTime, EventArgs.Empty);
+                timeInterval_Click(timeInterval, EventArgs.Empty);
+
+                if (!this.setup())
+                {
+                    MessageBox.Show(
+                        "Você não configurou os intervalos de medição!", 
+                        "Impossível Medir", 
+                        MessageBoxButtons.OK, 
+                        MessageBoxIcon.Stop
+                    );
+
+                    return;
+                }
+            }
+
             if (!this.running)
             {
                 if (this.fileName == null || this.fileName.Length <= 0)
@@ -93,7 +141,7 @@ namespace DataLogger
         {
             string time = Convert.ToString(DateTime.Now.TimeOfDay);
             collectedData.AppendText(time + ";Medida " + Convert.ToString(this.counter++) + "\r\n");
-            serialPort1.ReadLine();
+            //serialPort1.ReadLine();
         }
 
         private void measureTimer_Tick(object sender, EventArgs e)

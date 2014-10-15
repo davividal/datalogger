@@ -47,6 +47,11 @@ namespace DataLogger
             // 
             // statusStrip1
             // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.portMenu,
+            this.timeInterval,
+            this.measureTime,
+            this.toolStripProgressBar1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 308);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(609, 22);
@@ -61,7 +66,7 @@ namespace DataLogger
             this.portMenu.Name = "portMenu";
             this.portMenu.Size = new System.Drawing.Size(48, 20);
             this.portMenu.Text = "Porta";
-            this.portMenu.Click += new System.EventHandler(this.portMenu_Click);
+            this.portMenu.DropDownOpening += new System.EventHandler(this.portMenu_Click);
             // 
             // timeInterval
             // 
