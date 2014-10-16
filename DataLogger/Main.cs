@@ -46,6 +46,8 @@ namespace DataLogger
                 sender.DropDownItems.Add(portMenu);
             }
 
+            startProcess.Enabled = (sender.DropDownItems.Count > 0);
+
             return portMenu;
         }
 
