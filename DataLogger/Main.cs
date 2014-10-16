@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Timers;
 
-using Microsoft.VisualBasic;
-
 namespace DataLogger
 {
     public partial class Main : Form
@@ -24,8 +22,6 @@ namespace DataLogger
 
         private Boolean measureSetup = false;
 
-        private int counter = 0;
-
         public Main()
         {
             InitializeComponent();
@@ -36,34 +32,32 @@ namespace DataLogger
             return this.intervalSetup && this.measureSetup;
         }
 
-        private void portMenu_Click(object sender, EventArgs e)
+        private ToolStripMenuItem introspectSystemPorts(ToolStripDropDownButton sender, EventArgs e)
         {
             ToolStripMenuItem portMenu = new ToolStripMenuItem();
 
-            ((ToolStripDropDownButton)sender).DropDownItems.Clear();
+            sender.DropDownItems.Clear();
             foreach (string portName in SerialPort.GetPortNames())
             {
                 portMenu = new ToolStripMenuItem();
                 portMenu.Text = portName;
                 portMenu.Click += setupPortClick;
 
-                ((ToolStripDropDownButton)sender).DropDownItems.Add(portMenu);
+                sender.DropDownItems.Add(portMenu);
             }
 
-            portMenu = new ToolStripMenuItem();
-            portMenu.Text = "COM1";
-            portMenu.Click += setupPortClick;
-            ((ToolStripDropDownButton)sender).DropDownItems.Add(portMenu);
+            return portMenu;
+        }
 
-            portMenu = new ToolStripMenuItem();
-            portMenu.Text = "COM2";
-            portMenu.Click += setupPortClick;
-            ((ToolStripDropDownButton)sender).DropDownItems.Add(portMenu);
+        private void portMenu_Click(object sender, EventArgs e)
+        {
+            introspectSystemPorts((ToolStripDropDownButton)sender, e);
         }
 
         private void setupPortClick(object sender, EventArgs e)
         {
             serialPort1.PortName = ((ToolStripMenuItem)sender).Text;
+            portMenu.Text = ((ToolStripMenuItem)sender).Text;
         }
 
         private void timeInterval_Click(object sender, EventArgs e)
@@ -98,6 +92,18 @@ namespace DataLogger
 
         private void startProcess_Click(object sender, EventArgs e)
         {
+            if (this.portMenu.DropDownItems.Count == 0)
+            {
+                MessageBox.Show(
+                        "Não há nenhuma porta serial disponível. Verifique as conexões.",
+                        "Impossível Medir",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop
+                    );
+
+                return;
+            }
+
             if (!this.setup())
             {
                 measureTime_Click(measureTime, EventArgs.Empty);
@@ -139,21 +145,20 @@ namespace DataLogger
 
         private void intervalTimer_Tick(object sender, EventArgs e)
         {
-            string time = Convert.ToString(DateTime.Now.TimeOfDay);
-            String measure;
-
             try
             {
-                measure = serialPort1.ReadLine();
+                ProcessData process = ProcessData.SetupProcessing(serialPort1);
 
-                collectedData.AppendText(time + ";" + measure + "\r\n");
+                process.read();
+
+                collectedData.AppendText(process.getCollectedData());
             }
             catch (System.InvalidOperationException exception)
             {
                 toogleMeasure();
 
                 MessageBox.Show(
-                    "Ocorreu um erro durante a leitura da porta serial. A mensagem de erro foi: " + exception.Message,
+                    exception.Message,
                     "Impossível Medir",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Stop
@@ -174,6 +179,8 @@ namespace DataLogger
             {
                 imageKey = "start-icon 16.png";
                 text = "Iniciar";
+
+                System.IO.File.WriteAllText(this.fileName, collectedData.Text);
             }
             else
             {
@@ -185,6 +192,21 @@ namespace DataLogger
             startProcess.Text = text;
 
             intervalTimer.Enabled = measureTimer.Enabled = this.running = !this.running;
+        }
+
+        private void Main_Deactivate(object sender, EventArgs e)
+        {
+            serialPort1.Close();
+        }
+
+        private void Main_Load(object sender, EventArgs e)
+        {
+            ToolStripMenuItem port = introspectSystemPorts(portMenu, EventArgs.Empty);
+
+            if (SerialPort.GetPortNames().Length == 1)
+            {
+                setupPortClick(port, EventArgs.Empty);
+            }
         }
     }
 }

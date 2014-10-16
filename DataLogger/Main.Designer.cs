@@ -101,6 +101,10 @@ namespace DataLogger
             // 
             this.measureTimer.Tick += new System.EventHandler(this.measureTimer_Tick);
             // 
+            // serialPort1
+            // 
+            this.serialPort1.PortName = "COM6";
+            // 
             // saveFileDialog1
             // 
             this.saveFileDialog1.CreatePrompt = true;
@@ -151,6 +155,8 @@ namespace DataLogger
             this.Controls.Add(this.statusStrip1);
             this.Name = "Main";
             this.Text = "DataLogger";
+            this.Deactivate += new System.EventHandler(this.Main_Deactivate);
+            this.Load += new System.EventHandler(this.Main_Load);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
